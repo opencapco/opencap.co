@@ -22,7 +22,7 @@
     "trigger": "npx @trigger.dev/cli@latest dev"
   },
   "dependencies": {
-    "@ant-design/plots": "^2.1.12",
+    "@ant-design/plots": "^2.1.15",
     "@aws-sdk/client-s3": "^3.525.0",
     "@aws-sdk/s3-request-presigner": "^3.529.1",
     "@blocknote/react": "^0.12.2",
