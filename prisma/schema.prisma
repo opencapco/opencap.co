@@ -476,6 +476,7 @@ model Share {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([companyId, certificateId])
   @@index([companyId])
   @@index([shareClassId])
   @@index([stakeholderId])

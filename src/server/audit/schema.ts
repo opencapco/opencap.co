@@ -28,6 +28,8 @@ export const AuditSchema = z.object({
     "document.created",
     "document.deleted",
 
+    "share.created",
+
     "option.created",
     "option.deleted",
 

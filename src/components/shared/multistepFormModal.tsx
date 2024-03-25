@@ -7,7 +7,6 @@ import { useState } from "react";
 import { FormProvider, type SubmitHandler, useForm } from "react-hook-form";
 import { type z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type DialogProps } from "@radix-ui/react-dialog";
 
 export type stepsType = {
   id: number;
@@ -24,7 +23,6 @@ type MultiStepFormModalType = {
   schema: z.AnyZodObject;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onSubmit: SubmitHandler<any>;
-  dialogProps: DialogProps;
 };
 
 export default function MultiStepFormModal({
@@ -34,8 +32,8 @@ export default function MultiStepFormModal({
   steps,
   schema,
   onSubmit,
-  dialogProps,
 }: MultiStepFormModalType) {
+  const [open, setOpen] = useState(false);
   const [formStep, setFormStep] = useState(1);
 
   const methods = useForm<FormField>({ resolver: zodResolver(schema) });
@@ -53,12 +51,16 @@ export default function MultiStepFormModal({
     });
     if (!output) return;
 
-    if (formStep < steps.length) {
-      setFormStep(formStep + 1);
-    } else {
-      await methods.handleSubmit(onSubmit)();
-      methods.reset();
-      dialogProps.open = false;
+    try {
+      if (formStep < steps.length) {
+        setFormStep(formStep + 1);
+      } else {
+        await methods.handleSubmit(onSubmit)();
+        methods.reset();
+        setOpen(false);
+      }
+    } catch (error) {
+      setOpen(true);
     }
   };
 
@@ -74,7 +76,7 @@ export default function MultiStepFormModal({
       title={title}
       subtitle={subtitle}
       trigger={trigger}
-      dialogProps={dialogProps}
+      dialogProps={{ open, onOpenChange: (val) => setOpen(val) }}
     >
       <div className="grid grid-cols-10">
         <nav aria-label="Progress" className="red col-span-3 max-w-64">
@@ -171,7 +173,9 @@ export default function MultiStepFormModal({
                 <h5 className="text-lg font-semibold">
                   {steps[formStep - 1]?.title}
                 </h5>
-                <StepForm />
+                <div className="mt-4">
+                  <StepForm />
+                </div>
               </div>
             </form>
           </FormProvider>
