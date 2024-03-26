@@ -3,7 +3,7 @@ import {
   getPresignedPutUrl,
   type getPresignedUrlOptions,
 } from "@/server/file-uploads";
-
+import { generatePublicId } from "./id";
 /**
  * usage
  * ```js
@@ -19,20 +19,35 @@ import {
  */
 
 export const uploadFile = async (
-  file: File,
+  file: File | Buffer,
   options: Pick<
     getPresignedUrlOptions,
     "expiresIn" | "keyPrefix" | "identifier"
   >,
   bucketMode: "publicBucket" | "privateBucket" = "privateBucket",
 ) => {
+  const isFile = file instanceof File;
+  let fileType: string;
+  let fileName: string;
+  let fileSize: number;
+
+  if (isFile) {
+    fileName = file.name;
+    fileType = file.type;
+    fileSize = file.size;
+  } else {
+    fileName = `Safe-template-${generatePublicId()}`;
+    fileType = "application/pdf";
+    fileSize = file.byteLength;
+  }
+
   const { url, key, bucketUrl } = await getPresignedPutUrl({
-    contentType: file.type,
-    fileName: file.name,
+    contentType: fileType,
+    fileName,
     bucketMode,
     ...options,
   });
-  const body = await file.arrayBuffer();
+  const body = isFile ? await file.arrayBuffer() : file;
   const res = await fetch(url, {
     method: "PUT",
     headers: {
@@ -42,11 +57,10 @@ export const uploadFile = async (
   });
   if (!res.ok) {
     throw new Error(
-      `Failed to upload file "${file.name}", failed with status code ${res.status}`,
+      `Failed to upload file "${fileName}", failed with status code ${res.status}`,
     );
   }
 
-  const { name, type, size } = file;
   let fileUrl = bucketUrl;
 
   if (bucketMode === "publicBucket" && process.env.NEXT_PUBLIC_UPLOAD_DOMAIN) {
@@ -55,9 +69,9 @@ export const uploadFile = async (
 
   return {
     key,
-    name,
-    mimeType: type,
-    size,
+    name: fileName,
+    mimeType: fileType,
+    size: fileSize,
     fileUrl,
   };
 };

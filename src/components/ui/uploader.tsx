@@ -47,7 +47,17 @@ export function Uploader({
 
   const onDrop = useCallback(async (acceptedFiles: FileWithPath[]) => {
     try {
+      if (!multiple && acceptedFiles.length > 1) {
+        toast({
+          variant: "destructive",
+          title: "Files exceeded",
+          description: "Only one file is allowed for upload",
+        });
+        return;
+      }
+
       setUploading(true);
+
       for (const file of acceptedFiles) {
         const { key, mimeType, name, size } = await uploadFile(file, {
           identifier,

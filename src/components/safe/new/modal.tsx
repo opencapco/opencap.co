@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { api } from "@/trpc/react";
-import { useForm } from "react-hook-form";
-import useSteps from "@/components/safe/new/steps";
-import { zodResolver } from "@hookform/resolvers/zod";
 import MultiStepModal from "@/components/shared/multistep-modal";
+import { useRouter } from "next/navigation";
+import useSafeSteps from "./useSafeSteps";
+import { useSession } from "next-auth/react";
+import { useToast } from "@/components/ui/use-toast";
 import {
   type SafeMutationType,
   SafeMutationSchema,
@@ -18,21 +19,44 @@ export default function CreateNewSafe({
   companyId,
   trigger,
 }: CreateNewSafeType) {
-  const steps = useSteps({ companyId });
-  const formSchema = SafeMutationSchema;
-  const { mutateAsync } = api.safe.create.useMutation();
-
   const [open, setOpen] = useState(false);
+  const { data: session } = useSession();
+  const router = useRouter();
 
-  const form = useForm<SafeMutationType>({
-    resolver: zodResolver(formSchema),
+  const steps = useSafeSteps({ companyId });
+  const formSchema = SafeMutationSchema;
+  const { toast } = useToast();
+
+  const { mutateAsync } = api.safe.create.useMutation({
+    onSuccess: (payload) => {
+      const isSuccess = payload?.success;
+      const message = payload?.message;
+      toast({
+        variant: isSuccess ? "default" : "destructive",
+        title: isSuccess ? "🎉 Success" : "Failed creating safe",
+        description: message,
+      });
+      if (isSuccess) {
+        router.push(
+          `/${session?.user.companyPublicId}/templates/${payload?.document?.publicId}`,
+        );
+      }
+      setOpen(false);
+    },
   });
 
-  const isSubmitting = form.formState.isSubmitting;
-
   const onSubmit = async (values: SafeMutationType) => {
-    // await mutateAsync({ values });
-    setOpen(false);
+    if (values.safeTemplate !== "CUSTOM") {
+      await mutateAsync(values);
+    }
+    if (
+      values.safeTemplate === "CUSTOM" &&
+      values?.documents?.length === 1 &&
+      values?.documents[0]?.bucketId &&
+      values?.documents[0]?.name
+    ) {
+      await mutateAsync(values);
+    }
   };
 
   return (
