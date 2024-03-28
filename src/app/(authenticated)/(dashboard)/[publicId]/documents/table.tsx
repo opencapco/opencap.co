@@ -47,7 +47,9 @@ const DocumentsTable = ({ documents }: DocumentTableProps) => {
                 <FileIcon type={document.bucket.mimeType} />
                 <span className="flex">{document.name}</span>
               </TableCell>
-              <TableCell>{document.uploader.user.name}</TableCell>
+              <TableCell>
+                {document?.uploader?.user.name ?? "Open cap"}
+              </TableCell>
               <TableCell suppressHydrationWarning>
                 {dayjsExt().to(document.createdAt)}
               </TableCell>

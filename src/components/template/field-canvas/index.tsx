@@ -5,7 +5,10 @@ import { useCallback, useState } from "react";
 import { TemplateField } from "./template-field";
 import { DrawingField } from "./drawing-field";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import { type TemplateFieldForm } from "@/providers/template-field-provider";
+import {
+  DEFAULT_GROUP,
+  type TemplateFieldForm,
+} from "@/providers/template-field-provider";
 import { useResizeObserver } from "@wojtekmaj/react-hooks";
 import {
   type PageMeasurement,
@@ -25,6 +28,7 @@ export function FieldCanvas({ mode = "edit", measurements }: FieldCanvasProp) {
   const { append, fields, remove } = useFieldArray({
     name: "fields",
     control,
+    keyName: "_id",
   });
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPos, setStartPos] = useState({ x: 0, y: 0 });
@@ -69,7 +73,7 @@ export function FieldCanvas({ mode = "edit", measurements }: FieldCanvasProp) {
           const x = e.clientX - rect.left;
           const y = e.clientY - rect.top;
           setIsDrawing(true);
-
+          setFocusId("");
           setStartPos({ x, y });
           setEndPos({ x, y });
         }}
@@ -120,6 +124,7 @@ export function FieldCanvas({ mode = "edit", measurements }: FieldCanvasProp) {
               viewportHeight: viewport.height,
               viewportWidth: viewport.width,
               page: pageNum,
+              group: DEFAULT_GROUP[0]?.name ?? "",
             });
 
             setFocusId(id);
@@ -141,7 +146,7 @@ export function FieldCanvas({ mode = "edit", measurements }: FieldCanvasProp) {
           viewportHeight={field.viewportHeight}
           currentViewportWidth={viewport.width}
           currentViewportHeight={viewport.height}
-          key={field.id}
+          key={field._id}
           focusId={focusId}
           height={field.height}
           left={field.left}

@@ -5,7 +5,7 @@ import { type ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { type TypeZodAddFieldMutationSchema } from "@/trpc/routers/template-field-router/schema";
 
-type Field = TypeZodAddFieldMutationSchema["data"][number];
+type Field = TypeZodAddFieldMutationSchema["fields"][number];
 
 interface TemplateSigningFieldProviderProps {
   children: ReactNode;

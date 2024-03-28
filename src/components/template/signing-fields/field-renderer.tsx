@@ -17,7 +17,7 @@ import { type TypeZodAddFieldMutationSchema } from "@/trpc/routers/template-fiel
 import { useFormContext } from "react-hook-form";
 
 type FieldRendererProps = Pick<
-  TypeZodAddFieldMutationSchema["data"][number],
+  TypeZodAddFieldMutationSchema["fields"][number],
   "type" | "name" | "required" | "readOnly"
 >;
 

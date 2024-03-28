@@ -1,23 +1,22 @@
-import { withAuth, type withAuthTrpcContextType } from "@/trpc/api/trpc";
+import { withAuth, type CreateTRPCContextType } from "@/trpc/api/trpc";
 import {
   type TypeZodCreateBucketMutationSchema,
   ZodCreateBucketMutationSchema,
 } from "../schema";
 
-interface createBucketHandlerOptions {
-  ctx: withAuthTrpcContextType;
+interface createBucketHandlerOptions extends Pick<CreateTRPCContextType, "db"> {
   input: TypeZodCreateBucketMutationSchema;
 }
 
 export const createBucketHandler = ({
-  ctx,
+  db,
   input,
 }: createBucketHandlerOptions) => {
-  return ctx.db.bucket.create({ data: input });
+  return db.bucket.create({ data: input });
 };
 
 export const createBucketProcedure = withAuth
   .input(ZodCreateBucketMutationSchema)
-  .mutation(async (opts) => {
-    return createBucketHandler(opts);
+  .mutation(async ({ ctx: { db }, input }) => {
+    return createBucketHandler({ input, db });
   });

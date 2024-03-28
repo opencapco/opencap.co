@@ -1,19 +1,21 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { RiCloseCircleLine } from "@remixicon/react";
+import { RiAddCircleLine, RiCloseCircleLine } from "@remixicon/react";
 import {
   Select,
   SelectContent,
   SelectItem,
+  SelectItemStyle,
+  SelectSeparator,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-
+import * as SelectPrimitive from "@radix-ui/react-select";
 import { FieldTypeData } from "../field-type-data";
 
 import { type TypeZodAddFieldMutationSchema } from "@/trpc/routers/template-field-router/schema";
-import { useFormContext, useWatch } from "react-hook-form";
+import { useFieldArray, useFormContext, useWatch } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -28,8 +30,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { type TemplateFieldForm } from "@/providers/template-field-provider";
 
-type Field = TypeZodAddFieldMutationSchema["data"][number];
+type Field = TypeZodAddFieldMutationSchema["fields"][number];
 
 interface TemplateFieldProps {
   left: number;
@@ -152,6 +155,8 @@ export function TemplateField({
           />
         </div>
 
+        <FieldGroup index={index} />
+
         {type === "TEXT" && <FieldDefaultValue index={index} />}
       </div>
     </TemplateFieldContainer>
@@ -164,7 +169,6 @@ interface FieldDefaultValueProps {
 
 function FieldDefaultValue({ index }: FieldDefaultValueProps) {
   const { control } = useFormContext<{ fields: Field[] }>();
-  const type = useWatch({ control: control, name: `fields.${index}.type` });
 
   return (
     <Accordion type="single" collapsible>
@@ -208,5 +212,75 @@ function FieldDefaultValue({ index }: FieldDefaultValueProps) {
         </AccordionContent>
       </AccordionItem>
     </Accordion>
+  );
+}
+
+function FieldGroupItems() {
+  const { control } = useFormContext<TemplateFieldForm>();
+  const groups = useWatch({ control, name: "groups" });
+
+  return groups.map((item) => (
+    <SelectItem key={item.name} value={item.name}>
+      {item.name}
+    </SelectItem>
+  ));
+}
+
+interface FieldGroupProps {
+  index: number;
+}
+
+const newGroupName = "add-new-group";
+
+function FieldGroup({ index }: FieldGroupProps) {
+  const { control } = useFormContext<TemplateFieldForm>();
+  const { append, fields } = useFieldArray({
+    name: "groups",
+    control,
+  });
+  return (
+    <FormField
+      control={control}
+      name={`fields.${index}.group`}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>Group</FormLabel>
+          <Select
+            onValueChange={(val) => {
+              if (val === newGroupName) {
+                append({
+                  name: `Group ${fields.length + 1}`,
+                });
+              } else {
+                field.onChange(val);
+              }
+            }}
+            value={field.value}
+          >
+            <FormControl>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a verified email to display" />
+              </SelectTrigger>
+            </FormControl>
+            <SelectContent>
+              <FieldGroupItems />
+              <SelectSeparator />
+              <SelectPrimitive.Item
+                value={newGroupName}
+                className={SelectItemStyle}
+              >
+                <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+                  <RiAddCircleLine className="h-4 w-4" aria-hidden />
+                </span>
+
+                <SelectPrimitive.ItemText>
+                  Add new group
+                </SelectPrimitive.ItemText>
+              </SelectPrimitive.Item>
+            </SelectContent>
+          </Select>
+        </FormItem>
+      )}
+    />
   );
 }

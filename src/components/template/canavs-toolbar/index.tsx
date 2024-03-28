@@ -5,18 +5,17 @@ import * as Toolbar from "@radix-ui/react-toolbar";
 import { type FieldTypes } from "@/prisma-enums";
 import { FieldTypeData } from "../field-type-data";
 
-import { useFormContext, useFormState } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { FormField } from "@/components/ui/form";
 import { type TemplateFieldForm } from "@/providers/template-field-provider";
+import { RecepientModal } from "./recepient-modal";
 
-export function CanvasToolbar() {
+interface CanvasToolbarProps {
+  templatePublicId: string;
+}
+
+export function CanvasToolbar({ templatePublicId }: CanvasToolbarProps) {
   const { control } = useFormContext<TemplateFieldForm>();
-  const { isDirty } = useFormState({
-    control,
-    name: "fields",
-  });
-
-  const isDisabled = !isDirty;
 
   return (
     <div className="relative z-30 col-span-12 mb-20">
@@ -54,11 +53,7 @@ export function CanvasToolbar() {
           )}
         />
 
-        <Toolbar.Button asChild>
-          <Button disabled={isDisabled} type="submit">
-            Save
-          </Button>
-        </Toolbar.Button>
+        <RecepientModal templatePublicId={templatePublicId} />
       </Toolbar.Root>
     </div>
   );

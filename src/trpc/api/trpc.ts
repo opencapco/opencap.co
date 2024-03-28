@@ -39,7 +39,9 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
   };
 };
 
-type CreateTRPCContextType = Awaited<ReturnType<typeof createTRPCContext>>;
+export type CreateTRPCContextType = Awaited<
+  ReturnType<typeof createTRPCContext>
+>;
 
 const withAuthTrpcContext = ({ session, ...rest }: CreateTRPCContextType) => {
   if (!session || !session.user) {
