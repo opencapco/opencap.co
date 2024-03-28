@@ -29,3 +29,7 @@ export const ZodAddStakeholderArrayMutationSchema = z.array(
 export type TypeStakeholderArray = z.infer<
   typeof ZodAddStakeholderArrayMutationSchema
 >;
+
+export type AddStakeholderMutationType = z.infer<
+  typeof ZodAddStakeholderMutationSchema
+>;

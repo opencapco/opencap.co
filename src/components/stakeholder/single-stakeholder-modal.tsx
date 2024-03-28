@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Modal from "@/components/shared/modal";
-import StakeholderUploader from "./stakeholder-uploader";
+import SingleStakeholderForm from "./single-stakeholder-form";
 
 type StakeholderType = {
   title: string | React.ReactNode;
@@ -10,7 +10,11 @@ type StakeholderType = {
   trigger: React.ReactNode;
 };
 
-const StakeholderModal = ({ title, subtitle, trigger }: StakeholderType) => {
+const SingleStakeholdersModal = ({
+  title,
+  subtitle,
+  trigger,
+}: StakeholderType) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -26,9 +30,9 @@ const StakeholderModal = ({ title, subtitle, trigger }: StakeholderType) => {
         },
       }}
     >
-      <StakeholderUploader setOpen={setOpen} />
+      <SingleStakeholderForm setOpen={setOpen} />
     </Modal>
   );
 };
 
-export default StakeholderModal;
+export default SingleStakeholdersModal;

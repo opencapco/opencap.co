@@ -1,11 +1,9 @@
 import { api } from "@/trpc/server";
-import Tldr from "@/components/shared/tldr";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import EmptyState from "@/components/shared/empty-state";
-import { RiAddFill, RiGroup2Fill } from "@remixicon/react";
-import StakeholderModal from "@/components/stakeholder/stakeholder-modal";
+import { RiGroup2Fill } from "@remixicon/react";
 import StakeholderTable from "@/components/stakeholder/stakeholder-table";
+import StakeholderDropdown from "@/components/stakeholder/stakeholder-dropdown";
 
 const StakeholdersPage = async () => {
   const stakeholders = await api.stakeholder.getStakeholders.query();
@@ -17,26 +15,7 @@ const StakeholdersPage = async () => {
         title="You do not have any stakeholders!"
         subtitle="Please click the button below to add or import stakeholders."
       >
-        <StakeholderModal
-          title="Add or Import Stakeholders"
-          subtitle={
-            <Tldr
-              message="Manage stakeholders by adding or importing them. 
-              Categorize, assign roles, and maintain contact info for investors, partners, and clients."
-              cta={{
-                label: "Learn more",
-                // TODO - this link should be updated to the correct URL
-                href: "https://opencap.co/help",
-              }}
-            />
-          }
-          trigger={
-            <Button size="lg">
-              <RiAddFill className="mr-2 h-5 w-5" />
-              Add stakeholders
-            </Button>
-          }
-        />
+        <StakeholderDropdown />
       </EmptyState>
     );
   }
@@ -52,26 +31,7 @@ const StakeholdersPage = async () => {
         </div>
 
         <div>
-          <StakeholderModal
-            title="Add or Import Stakeholders"
-            subtitle={
-              <Tldr
-                message="Manage stakeholders by adding or importing them. 
-                Categorize, assign roles, and maintain contact info for investors, partners, and clients."
-                cta={{
-                  label: "Learn more",
-                  // TODO - this link should be updated to the correct URL
-                  href: "https://opencap.co/help",
-                }}
-              />
-            }
-            trigger={
-              <Button>
-                <RiAddFill className="mr-2 h-5 w-5" />
-                Add stakeholders
-              </Button>
-            }
-          />
+          <StakeholderDropdown />
         </div>
       </div>
 
