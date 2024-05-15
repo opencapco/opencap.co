@@ -1,3 +1,4 @@
+import { Audit } from "@/server/audit";
 import { checkMembership } from "@/server/auth";
 import { createTRPCRouter, withAuth } from "@/trpc/api/trpc";
 import { ZodOnboardingMutationSchema } from "../onboarding-router/schema";
@@ -40,7 +41,7 @@ export const companyRouter = createTRPCRouter({
   switchCompany: withAuth
     .input(ZodSwitchCompanyMutationSchema)
     .mutation(async ({ ctx, input }) => {
-      const { db, session } = ctx;
+      const { db, session, requestIp, userAgent } = ctx;
 
       await db.$transaction(async (tx) => {
         const { memberId } = await checkMembership({
@@ -59,18 +60,34 @@ export const companyRouter = createTRPCRouter({
             lastAccessed: new Date(),
           },
         });
+
+        await Audit.create(
+          {
+            action: "company.switched",
+            companyId: session.user.companyId,
+            actor: { type: "user", id: session.user.id },
+            context: {
+              requestIp,
+              userAgent,
+            },
+            target: [{ type: "company", id: session.user.companyId }],
+            summary: `${session.user.name} switched to a new company.`,
+          },
+          tx,
+        );
       });
 
       return { success: true };
     }),
   updateCompany: withAuth
     .input(ZodOnboardingMutationSchema)
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ ctx: { db, session, requestIp, userAgent }, input }) => {
+      const user = session.user;
       try {
-        await ctx.db.$transaction(async (tx) => {
+        await db.$transaction(async (tx) => {
           const { companyId } = await checkMembership({
             tx,
-            session: ctx.session,
+            session,
           });
 
           const { company } = input;
@@ -85,6 +102,21 @@ export const companyRouter = createTRPCRouter({
               ...rest,
             },
           });
+
+          await Audit.create(
+            {
+              action: "company.updated",
+              companyId: user.companyId,
+              actor: { type: "user", id: user.id },
+              context: {
+                requestIp,
+                userAgent,
+              },
+              target: [{ type: "company", id: user.companyId }],
+              summary: `${user.name} updated the company details.`,
+            },
+            tx,
+          );
         });
 
         return {

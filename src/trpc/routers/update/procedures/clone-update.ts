@@ -1,13 +1,15 @@
 import { generatePublicId } from "@/common/id";
+import { Audit } from "@/server/audit";
 import { withAuth } from "@/trpc/api/trpc";
 import { UpdateMutationSchema } from "../schema";
 
 export const cloneUpdateProcedure = withAuth
   .input(UpdateMutationSchema)
-  .mutation(async ({ ctx, input }) => {
+  .mutation(async ({ ctx: { db, userAgent, requestIp, session }, input }) => {
     try {
-      const authorId = ctx.session.user.memberId;
-      const companyId = ctx.session.user.companyId;
+      const user = session.user;
+      const authorId = user.memberId;
+      const companyId = user.companyId;
       const publicId = generatePublicId();
       const { title, content, html } = input;
 
@@ -17,8 +19,8 @@ export const cloneUpdateProcedure = withAuth
           message: "Title and content cannot be empty.",
         };
       } else {
-        await ctx.db.$transaction(async (tx) => {
-          await tx.update.create({
+        await db.$transaction(async (tx) => {
+          const update = await tx.update.create({
             data: {
               html,
               title: `Copy of - ${title}`,
@@ -28,6 +30,21 @@ export const cloneUpdateProcedure = withAuth
               authorId,
             },
           });
+
+          await Audit.create(
+            {
+              action: "update.cloned",
+              companyId: user.companyId,
+              actor: { type: "user", id: user.id },
+              context: {
+                requestIp,
+                userAgent,
+              },
+              target: [{ type: "update", id: update.id }],
+              summary: `${user.name} cloned the (${update.title}) update.`,
+            },
+            tx,
+          );
         });
 
         return {

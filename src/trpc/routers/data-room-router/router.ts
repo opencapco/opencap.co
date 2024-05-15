@@ -7,6 +7,7 @@ import {
 } from "@/jobs/share-data-room-email";
 import { encode } from "@/lib/jwt";
 import { ShareRecipientSchema } from "@/schema/contacts";
+import { Audit } from "@/server/audit";
 import { checkMembership } from "@/server/auth";
 import { getTriggerClient } from "@/trigger";
 import { createTRPCRouter, withAuth } from "@/trpc/api/trpc";
@@ -114,7 +115,7 @@ export const dataRoomRouter = createTRPCRouter({
   save: withAuth.input(DataRoomSchema).mutation(async ({ ctx, input }) => {
     try {
       let room = {} as DataRoom;
-      const { db, session } = ctx;
+      const { db, session, requestIp, userAgent } = ctx;
 
       const { publicId } = input;
 
@@ -162,6 +163,57 @@ export const dataRoomRouter = createTRPCRouter({
             });
           }
         }
+
+        if (!input.publicId) {
+          await Audit.create(
+            {
+              action: "dataRoom.created",
+              companyId: session.user.companyId,
+              actor: { type: "user", id: session.user.id },
+              context: {
+                requestIp,
+                userAgent,
+              },
+              target: [{ type: "dataRoom", id: room.id }],
+              summary: `${session.user.name} created the dataroom "${room.name}"`,
+            },
+            tx,
+          );
+        }
+
+        if (input.publicId && input?.documents?.length) {
+          await Audit.create(
+            {
+              action: "dataRoom.document-added",
+              companyId: session.user.companyId,
+              actor: { type: "user", id: session.user.id },
+              context: {
+                requestIp,
+                userAgent,
+              },
+              target: [{ type: "dataRoom", id: room.id }],
+              summary: `${session.user.name} added ${input.documents.length} document(s) in room "${room.name}"`,
+            },
+            tx,
+          );
+        }
+
+        if (input.publicId && input?.recipients?.length) {
+          await Audit.create(
+            {
+              action: "dataRoom.recipient-added",
+              companyId: session.user.companyId,
+              actor: { type: "user", id: session.user.id },
+              context: {
+                requestIp,
+                userAgent,
+              },
+              target: [{ type: "dataRoom", id: room.id }],
+              summary: `${session.user.name} added ${input.recipients.length} recipient(s) in room "${room.name}"`,
+            },
+            tx,
+          );
+        }
       });
 
       return {
@@ -188,7 +240,7 @@ export const dataRoomRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const trigger = getTriggerClient();
-      const { session, db } = ctx;
+      const { session, db, requestIp, userAgent } = ctx;
       const { dataRoomId, others, selectedContacts } = input;
       const { name: senderName, email: senderEmail, companyId } = session.user;
 
@@ -226,23 +278,41 @@ export const dataRoomRouter = createTRPCRouter({
                 ? { stakeholderId: recipient.id }
                 : {};
 
-          const recipientRecord = await db.dataRoomRecipient.upsert({
-            where: {
-              dataRoomId_email: {
-                dataRoomId,
-                email,
+          const { recipientRecord } = await db.$transaction(async (tx) => {
+            const recipientRecord = await tx.dataRoomRecipient.upsert({
+              where: {
+                dataRoomId_email: {
+                  dataRoomId,
+                  email,
+                },
               },
-            },
-            create: {
-              dataRoomId,
-              name: recipient.name,
-              email,
-              ...memberOrStakeholderId,
-            },
-            update: {
-              name: recipient.name,
-              ...memberOrStakeholderId,
-            },
+              create: {
+                dataRoomId,
+                name: recipient.name,
+                email,
+                ...memberOrStakeholderId,
+              },
+              update: {
+                name: recipient.name,
+                ...memberOrStakeholderId,
+              },
+            });
+            await Audit.create(
+              {
+                action: "dataRoom.shared",
+                companyId: session.user.companyId,
+                actor: { type: "user", id: session.user.id },
+                context: {
+                  requestIp,
+                  userAgent,
+                },
+                target: [{ type: "dataRoom", id: dataRoomId }],
+                summary: `${session.user.name} shared the dataroom "${dataRoom.name}"`,
+              },
+              tx,
+            );
+
+            return { recipientRecord };
           });
 
           const token = await encode({
@@ -287,28 +357,49 @@ export const dataRoomRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { session, db } = ctx;
+      const {
+        session: { user },
+        db,
+        requestIp,
+        userAgent,
+      } = ctx;
       const { dataRoomId, recipientId } = input;
-      const companyId = session.user.companyId;
+      const companyId = user.companyId;
 
-      const dataRoom = await db.dataRoom.findUniqueOrThrow({
-        where: {
-          id: dataRoomId,
-          companyId,
-        },
+      await db.$transaction(async (tx) => {
+        const dataRoom = await db.dataRoom.findUniqueOrThrow({
+          where: {
+            id: dataRoomId,
+            companyId,
+          },
+        });
+
+        if (!dataRoom) {
+          throw new Error("Data room not found");
+        }
+
+        await db.dataRoomRecipient.delete({
+          where: {
+            id: recipientId,
+            dataRoomId,
+          },
+        });
+
+        await Audit.create(
+          {
+            action: "dataRoom.unshared",
+            companyId: user.companyId,
+            actor: { type: "user", id: user.id },
+            context: {
+              requestIp,
+              userAgent,
+            },
+            target: [{ type: "dataRoom", id: dataRoomId }],
+            summary: `${user.name} unshared the dataroom "${dataRoom.name}"`,
+          },
+          tx,
+        );
       });
-
-      if (!dataRoom) {
-        throw new Error("Data room not found");
-      }
-
-      await db.dataRoomRecipient.delete({
-        where: {
-          id: recipientId,
-          dataRoomId,
-        },
-      });
-
       return {
         success: true,
         message: "Successfully removed access to data room!",

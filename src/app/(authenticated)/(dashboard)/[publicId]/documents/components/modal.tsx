@@ -40,7 +40,6 @@ const DocumentUploadModal = ({
             name: uploadedData.name,
             bucketId: uploadedData.id,
           });
-
           router.refresh();
           setOpen(false);
         }}

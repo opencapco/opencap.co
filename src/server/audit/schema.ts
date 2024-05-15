@@ -7,6 +7,9 @@ export const AuditSchema = z.object({
     "user.onboarded",
 
     "company.created",
+    "company.audited",
+    "company.switched",
+    "company.updated",
 
     "member.invited",
     "member.re-invited",
@@ -38,6 +41,22 @@ export const AuditSchema = z.object({
     "safe.deleted",
 
     "documentShare.created",
+
+    "stakeholder.added",
+
+    "bucket.created",
+
+    "update.saved",
+    "update.sent",
+    "update.cloned",
+
+    "template.created",
+
+    "dataRoom.created",
+    "dataRoom.document-added",
+    "dataRoom.recipient-added",
+    "dataRoom.shared",
+    "dataRoom.unshared",
   ]),
   occurredAt: z.date().optional(),
   actor: z.object({
@@ -47,7 +66,17 @@ export const AuditSchema = z.object({
 
   target: z.array(
     z.object({
-      type: z.enum(["user", "company", "document", "option", "documentShare"]),
+      type: z.enum([
+        "user",
+        "company",
+        "document",
+        "option",
+        "documentShare",
+        "bucket",
+        "update",
+        "template",
+        "dataRoom",
+      ]),
       id: z.string().optional().nullable(),
     }),
   ),
