@@ -14,6 +14,7 @@ export const ZodCreateTemplateMutationSchema = z
   .object({
     name: z.string(),
     bucketId: z.string(),
+    templateId: z.string().optional(),
   })
   .merge(ZodTemplateFieldRecipientSchema);
 
@@ -35,3 +36,21 @@ export const SignTemplateMutationSchema = z.object({
 export const ZodGetSigningFieldsSchema = z.object({
   token: z.string(),
 });
+
+export const ZodManageRecipientSchema = z
+  .object({
+    templateId: z.string(),
+  })
+  .merge(ZodTemplateFieldRecipientSchema);
+
+export const ZodAddRecipientProcedure = z.object({
+  templateId: z.string(),
+  recipient: z.object({
+    name: z.string().optional(),
+    email: z.string(),
+  }),
+});
+
+export type TypeZodAddRecipientProcedure = z.infer<
+  typeof ZodAddRecipientProcedure
+>;
