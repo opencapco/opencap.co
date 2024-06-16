@@ -16,6 +16,7 @@ export const getTemplateProcedure = withAuth
           ...(input.isDraftOnly && { status: "DRAFT" }),
         },
         select: {
+          id: true,
           name: true,
           status: true,
           bucket: {
@@ -68,5 +69,6 @@ export const getTemplateProcedure = withAuth
       name: template.name,
       status: template.status,
       recipients: template.eSignRecipient,
+      templateId: template.id,
     };
   });
