@@ -13,7 +13,7 @@ const EsignTemplateDetailPage = async ({
 }) => {
   const session = await withServerSession();
 
-  const { name, status, url, fields, recipients } =
+  const { name, status, url, fields, recipients, templateId, orderedDelivery } =
     await api.template.get.query({
       publicId: templatePublicId,
       isDraftOnly: true,
@@ -37,7 +37,11 @@ const EsignTemplateDetailPage = async ({
               {name}
             </span>
           </div>
-          <CanvasToolbar recipients={recipients} />
+          <CanvasToolbar
+            orderedDelivery={orderedDelivery}
+            templateId={templateId}
+            recipients={recipients}
+          />
           <PdfCanvas mode="edit" recipients={recipients} url={url} />
         </div>
       </TemplateFieldForm>
