@@ -10,7 +10,7 @@ import {
   type TRecipientFormSchema,
 } from "./manage-esign-recipients-form";
 
-export type RecipientSelectorModalProps = {
+type ManageEsignRecipientsModalProps = {
   title: string | React.ReactNode;
   subtitle: string | React.ReactNode;
   templateId: string;
@@ -22,7 +22,7 @@ export const ManageEsignRecipientsModal = ({
   subtitle,
   templateId,
   defaultValues,
-}: RecipientSelectorModalProps) => {
+}: ManageEsignRecipientsModalProps) => {
   const router = useRouter();
 
   const { data: recipients, refetch: refetchRecipients } =
