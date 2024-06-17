@@ -19,6 +19,7 @@ export const getTemplateProcedure = withAuth
           id: true,
           name: true,
           status: true,
+          orderedDelivery: true,
           bucket: {
             select: {
               key: true,
@@ -70,5 +71,6 @@ export const getTemplateProcedure = withAuth
       status: template.status,
       recipients: template.eSignRecipient,
       templateId: template.id,
+      orderedDelivery: template.orderedDelivery,
     };
   });
