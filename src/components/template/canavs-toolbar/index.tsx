@@ -48,9 +48,9 @@ function RecipientList({
   templateId,
   orderedDelivery,
 }: RecipientListProps) {
-  const { control, getValues } = useFormContext<TemplateFieldForm>();
+  const { control, watch } = useFormContext<TemplateFieldForm>();
 
-  const recipientColors = getValues("recipientColors");
+  const recipientColors = watch("recipientColors");
 
   const OpenRecipientSelectorModal = () => {
     pushModal("ManageEsignRecipientsModal", {
