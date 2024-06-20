@@ -68,20 +68,32 @@ export const ManageEsignRecipientsModal = ({
         recipientsPayload={recipients}
         defaultValues={defaultValues}
         onSubmit={() => {}}
-        onSave={async ({ recipient }) => {
+        onSave={async ({ recipient, setLoading }) => {
+          setLoading(true);
           await addRecipientMutation({
             recipient,
             templateId,
           });
+          setLoading(false);
         }}
-        onDelete={async ({ recipientId }) => {
+        onDelete={async ({ recipientId, setLoading }) => {
+          setLoading(true);
           await deleteRecipientMutation({ recipientId });
+          setLoading(false);
         }}
-        onToggleOrderedDelivery={async (newStatus, setLoading) => {
-          await toggleOrderedDelivery({
-            orderedDelivery: newStatus,
+        onToggleOrderedDelivery={async (
+          newStatusValue,
+          handleCheck,
+          setLoading,
+        ) => {
+          setLoading(true);
+          const { success } = await toggleOrderedDelivery({
+            orderedDelivery: newStatusValue,
             templateId,
           });
+          if (success) {
+            handleCheck(newStatusValue);
+          }
           setLoading(false);
         }}
       />
