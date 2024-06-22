@@ -71,5 +71,12 @@ export const boss = singleton(
   () =>
     new pgBoss({
       connectionString: env.DATABASE_URL,
+      max: 5,
+      retryBackoff: true,
+      retryLimit: 4,
+      expireInHours: 48,
+      archiveCompletedAfterSeconds: 60 * 60 * 2, // 2 hours
+      deleteAfterDays: 2,
+      retentionDays: 2,
     }),
 );
