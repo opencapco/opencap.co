@@ -36,6 +36,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { AutoComplete } from "../autocomplete";
 import Loading from "../common/loading";
 
 const formSchema = ZodOnboardingMutationSchema;
@@ -192,6 +193,11 @@ export const CompanyForm = ({ type, data }: CompanyFormProps) => {
   const isSubmitting = form.formState.isSubmitting;
 
   const isDirty = form.formState.isDirty;
+
+  const countriesAutocomplete = countries.map((c) => ({
+    label: c.name,
+    value: c.code,
+  }));
 
   return (
     <Form {...form}>
@@ -458,25 +464,16 @@ export const CompanyForm = ({ type, data }: CompanyFormProps) => {
               <FormField
                 control={form.control}
                 name="company.incorporationCountry"
-                render={({ field }) => (
+                render={() => (
                   <FormItem>
                     <FormLabel>Incorporation country</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select country" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {countries.map(
-                          (country: { code: string; name: string }) => (
-                            <SelectItem key={country.code} value={country.code}>
-                              {country.name}
-                            </SelectItem>
-                          ),
-                        )}
-                      </SelectContent>
-                    </Select>
+                    <FormControl>
+                      <AutoComplete
+                        options={countriesAutocomplete}
+                        placeholder="Select country"
+                        emptyMessage="No country found."
+                      />
+                    </FormControl>
                     <FormMessage className="text-xs font-light" />
                   </FormItem>
                 )}
