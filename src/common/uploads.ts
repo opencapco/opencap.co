@@ -50,7 +50,9 @@ export const uploadFile = async (
   const { name, type, size } = file;
   let fileUrl = bucketUrl;
 
-  const uploadDomain = env.NEXT_PUBLIC_UPLOAD_DOMAIN;
+  const uploadDomain =
+    process.env.NEXT_PUBLIC_UPLOAD_DOMAIN || env.NEXT_PUBLIC_UPLOAD_DOMAIN;
+
   if (bucketMode === "publicBucket" && uploadDomain) {
     fileUrl = `${uploadDomain}/${key}`;
   }

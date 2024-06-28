@@ -1,7 +1,7 @@
 "use client";
 
 import Tldr from "@/components/common/tldr";
-import { pushModal } from "@/components/modals";
+import { popModal, pushModal } from "@/components/modals";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,17 +32,15 @@ import {
 const formSchema = EquityPlanMutationSchema;
 
 type EquityFormType = {
-  type?: string;
+  type?: "create" | "update";
   className?: string;
-  setOpen: (val: boolean) => void;
   equityPlan?: EquityPlanMutationType;
-  shareClasses: ShareClassMutationType[];
+  shareClasses: ShareClassMutationType[] | [];
 };
 
-const EquityPlanForm = ({
-  setOpen,
+export const EquityPlanForm = ({
   type = "create",
-  shareClasses,
+  shareClasses = [],
   equityPlan = {
     id: "",
     name: "",
@@ -71,7 +69,7 @@ const EquityPlanForm = ({
       }
 
       form.reset();
-      setOpen(false);
+      popModal("EquityPlanModal");
       router.refresh();
     },
   });
@@ -85,7 +83,7 @@ const EquityPlanForm = ({
       }
 
       form.reset();
-      setOpen(false);
+      popModal("EquityPlanModal");
       router.refresh();
     },
   });
@@ -223,8 +221,8 @@ const EquityPlanForm = ({
                           className="cursor-pointer w-full text-left"
                           onClick={() => {
                             pushModal("ShareClassModal", {
+                              shouldClientFetch: shareClasses.length === 0,
                               type: "create",
-                              shouldClientFetch: true,
                               title: "Create a share class",
                               shareClasses,
                               subtitle: (
@@ -256,8 +254,8 @@ const EquityPlanForm = ({
                         variant={"outline"}
                         onClick={() => {
                           pushModal("ShareClassModal", {
+                            shouldClientFetch: shareClasses.length === 0,
                             type: "create",
-                            shouldClientFetch: true,
                             title: "Create a share class",
                             shareClasses,
                             subtitle: (
@@ -338,5 +336,3 @@ const EquityPlanForm = ({
     </Form>
   );
 };
-
-export default EquityPlanForm;

@@ -32,7 +32,7 @@ import { z } from "zod";
 import { EmptySelect } from "../../shared/EmptySelect";
 
 interface ContributionDetailsProps {
-  stakeholders: RouterOutputs["stakeholder"]["getStakeholders"];
+  stakeholders: RouterOutputs["stakeholder"]["getStakeholders"] | [];
 }
 
 const formSchema = z.object({
@@ -46,7 +46,7 @@ const formSchema = z.object({
 type TFormSchema = z.infer<typeof formSchema>;
 
 export const ContributionDetails = ({
-  stakeholders,
+  stakeholders = [],
 }: ContributionDetailsProps) => {
   const form = useForm<TFormSchema>({ resolver: zodResolver(formSchema) });
   const { next } = useStepper();

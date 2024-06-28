@@ -1,4 +1,5 @@
 import { uploadFile } from "@/common/uploads";
+import { popModal } from "@/components/modals";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -85,6 +86,8 @@ export function AddRecipientStep({ companyPublicId }: AddRecipientStepProps) {
       name: templateName,
       ...data,
     });
+
+    popModal("AddEsignDocumentModal");
 
     router.push(`/${companyPublicId}/documents/esign/${template.publicId}`);
   };

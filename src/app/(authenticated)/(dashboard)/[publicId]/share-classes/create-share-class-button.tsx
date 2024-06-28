@@ -18,6 +18,7 @@ export const CreateShareButton = ({
       onClick={() => {
         pushModal("ShareClassModal", {
           type: "create",
+          shouldClientFetch: false,
           title: "Create a share class",
           shareClasses,
           subtitle: (

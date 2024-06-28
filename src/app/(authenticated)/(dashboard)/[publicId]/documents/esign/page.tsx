@@ -1,11 +1,11 @@
 import EmptyState from "@/components/common/empty-state";
 import { PageLayout } from "@/components/dashboard/page-layout";
-import { AddEsignModal } from "@/components/esign/add-esign-modal";
 import { Card } from "@/components/ui/card";
 import { withServerSession } from "@/server/auth";
 import { api } from "@/trpc/server";
 import { RiUploadCloudLine } from "@remixicon/react";
-import { type Metadata } from "next";
+import type { Metadata } from "next";
+import { AddEsignDocumentButton } from "./components/add-esign-doc-button";
 import { ESignTable } from "./components/table";
 
 export const metadata: Metadata = {
@@ -23,7 +23,11 @@ const EsignDocumentPage = async () => {
         title="You do not have any documents!"
         subtitle="Click the button below to upload a new document for electronic signature."
       >
-        <AddEsignModal companyPublicId={session.user.companyPublicId} />
+        <AddEsignDocumentButton
+          title="esign a Document"
+          subtitle=""
+          companyPublicId={session.user.companyPublicId}
+        />
       </EmptyState>
     );
   }
@@ -32,7 +36,13 @@ const EsignDocumentPage = async () => {
     <PageLayout
       title="eSign documents"
       description="Upload, sign and send documents for electronic signatures."
-      action={<AddEsignModal companyPublicId={session.user.companyPublicId} />}
+      action={
+        <AddEsignDocumentButton
+          title="esign a Document"
+          subtitle=""
+          companyPublicId={session.user.companyPublicId}
+        />
+      }
     >
       <Card className="mt-3">
         <div className="p-6">

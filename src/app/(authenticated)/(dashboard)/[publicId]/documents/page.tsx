@@ -1,13 +1,12 @@
 import EmptyState from "@/components/common/empty-state";
 import { PageLayout } from "@/components/dashboard/page-layout";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { withServerSession } from "@/server/auth";
 import { api } from "@/trpc/server";
-import { RiAddFill, RiUploadCloudLine } from "@remixicon/react";
+import { RiUploadCloudLine } from "@remixicon/react";
 import type { Metadata } from "next";
-import DocumentUploadModal from "./components/modal";
 import DocumentsTable from "./components/table";
+import { DocumentUploadButton } from "./document-upload-button";
 
 export const metadata: Metadata = {
   title: "Documents",
@@ -24,14 +23,9 @@ const DocumentsPage = async () => {
         title="You do not have any documents!"
         subtitle="Please click the button below to upload a new document."
       >
-        <DocumentUploadModal
+        <DocumentUploadButton
           companyPublicId={session.user.companyPublicId}
-          trigger={
-            <Button>
-              <RiAddFill className="mr-2 h-5 w-5" />
-              Upload a document
-            </Button>
-          }
+          buttonDisplayName="Upload a document"
         />
       </EmptyState>
     );
@@ -43,18 +37,12 @@ const DocumentsPage = async () => {
         title="All documents"
         description="Upload documents to your company's document library."
         action={
-          <DocumentUploadModal
+          <DocumentUploadButton
             companyPublicId={session.user.companyPublicId}
-            trigger={
-              <Button>
-                <RiAddFill className="mr-2 h-5 w-5" />
-                Document
-              </Button>
-            }
+            buttonDisplayName="Document"
           />
         }
       />
-
       <Card className="mt-3">
         <div className="p-6">
           <DocumentsTable

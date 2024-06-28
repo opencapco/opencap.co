@@ -1,11 +1,14 @@
 "use client";
 
 import Modal from "@/components/common/push-modal";
+import { api } from "@/trpc/react";
 import type { ShareClassMutationType } from "@/trpc/routers/share-class/schema";
+import { Button } from "@tremor/react";
 import ShareClassForm from "./share-class-form";
 
 type ShareClassType = {
-  type: string;
+  type: "create" | "update";
+  shouldClientFetch: boolean;
   title: string | React.ReactNode;
   subtitle: string | React.ReactNode;
   shareClass?: ShareClassMutationType;
@@ -13,18 +16,26 @@ type ShareClassType = {
 };
 
 export const ShareClassModal = ({
+  type = "create",
+  shouldClientFetch,
   title,
   subtitle,
   shareClass,
   shareClasses = [] as ShareClassMutationType[],
-  type = "create",
 }: ShareClassType) => {
+  const _shareClasses = api.shareClass.get.useQuery(undefined, {
+    enabled: shouldClientFetch,
+  })?.data;
+  const __shareClasses = shareClasses.length
+    ? shareClasses
+    : (_shareClasses as unknown as ShareClassMutationType[]);
+
   return (
     <Modal size="2xl" title={title} subtitle={subtitle}>
       <ShareClassForm
         type={type}
         shareClass={shareClass}
-        shareClasses={shareClasses}
+        shareClasses={__shareClasses}
       />
     </Modal>
   );

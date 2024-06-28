@@ -68,10 +68,10 @@ type TFormSchema = z.infer<typeof formSchema>;
 type ShareClasses = RouterOutputs["shareClass"]["get"];
 
 interface GeneralDetailsProps {
-  shareClasses: ShareClasses;
+  shareClasses: ShareClasses | [];
 }
 
-export const GeneralDetails = ({ shareClasses }: GeneralDetailsProps) => {
+export const GeneralDetails = ({ shareClasses = [] }: GeneralDetailsProps) => {
   const form = useForm<TFormSchema>({
     resolver: zodResolver(formSchema),
   });
@@ -142,6 +142,7 @@ export const GeneralDetails = ({ shareClasses }: GeneralDetailsProps) => {
                           className="cursor-pointer w-full text-left"
                           onClick={() => {
                             pushModal("ShareClassModal", {
+                              shouldClientFetch: true,
                               type: "create",
                               title: "Create a share class",
                               subtitle: (

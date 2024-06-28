@@ -35,20 +35,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { popModal } from ".";
-import { type ComboBoxOption, LinearCombobox } from "../ui/combobox";
+import { popModal } from "..";
+import { type ComboBoxOption, LinearCombobox } from "../../ui/combobox";
 
 const formSchema = ShareClassMutationSchema;
 
 type ShareClassFormType = {
-  type?: string;
+  type: "create" | "update";
   className?: string;
   shareClass?: ShareClassMutationType;
   shareClasses: ShareClassMutationType[];
 };
 
 const ShareClassForm = ({
-  type = "create",
+  type,
   shareClasses,
   shareClass = {
     id: "",
@@ -482,12 +482,12 @@ const ShareClassForm = ({
                           <SelectContent>
                             <SelectGroup>
                               <SelectLabel>
-                                {shareClasses.length > 0
+                                {shareClasses?.length > 0
                                   ? "Share classes"
                                   : "No share classes"}
                               </SelectLabel>
 
-                              {shareClasses.map((shareClass) => (
+                              {shareClasses?.map((shareClass) => (
                                 <SelectItem
                                   key={shareClass.id}
                                   value={shareClass.id as string}

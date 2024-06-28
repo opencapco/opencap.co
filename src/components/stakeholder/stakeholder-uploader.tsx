@@ -9,12 +9,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
+import { popModal } from "../modals";
 
-type StakeholderUploaderType = {
-  setOpen: (val: boolean) => void;
-};
-
-const StakeholderUploader = ({ setOpen }: StakeholderUploaderType) => {
+const StakeholderUploader = () => {
   const [csvFile, setCSVFile] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -45,8 +42,7 @@ const StakeholderUploader = ({ setOpen }: StakeholderUploaderType) => {
 
       const parsedData = await parseStrakeholdersCSV(csvFile[0]);
       await mutateAsync(parsedData as TypeStakeholderArray);
-
-      setOpen(false);
+      popModal("MultipleStakeholdersModal");
     } catch (error) {
       toast.error(`🔥 Error - ${(error as Error).message}`);
     }

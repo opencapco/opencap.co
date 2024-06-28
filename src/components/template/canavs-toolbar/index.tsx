@@ -2,11 +2,12 @@
 
 import { Button } from "@/components/ui/button";
 import { COLORS } from "@/constants/esign";
-import { type FieldTypes } from "@/prisma/enums";
+import type { FieldTypes } from "@/prisma/enums";
 import * as Toolbar from "@radix-ui/react-toolbar";
 import { FieldTypeData } from "../field-type-data";
 
 import { OptionalMessageModal } from "@/components/esign/optional-message-modal";
+import { pushModal } from "@/components/modals";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -28,8 +29,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
-import { type TemplateFieldForm } from "@/providers/template-field-provider";
-import { type RouterOutputs } from "@/trpc/shared";
+import type { TemplateFieldForm } from "@/providers/template-field-provider";
+import type { RouterOutputs } from "@/trpc/shared";
 import { useCallback, useRef, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -104,6 +105,7 @@ export function CanvasToolbar({ recipients }: CanvasToolbarProps) {
     }
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: reason
   const onSignatureRequest = useCallback((canSubmit: boolean) => {
     if (canSubmit && submitRef.current) {
       setValue("status", "COMPLETE");

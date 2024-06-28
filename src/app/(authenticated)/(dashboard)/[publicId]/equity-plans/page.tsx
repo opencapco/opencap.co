@@ -1,6 +1,5 @@
 import EmptyState from "@/components/common/empty-state";
 import Tldr from "@/components/common/tldr";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { withServerSession } from "@/server/auth";
 import { db } from "@/server/db";
@@ -8,7 +7,7 @@ import type { EquityPlanMutationType } from "@/trpc/routers/equity-plan/schema";
 import type { ShareClassMutationType } from "@/trpc/routers/share-class/schema";
 import { RiAddFill, RiPieChart2Line } from "@remixicon/react";
 import type { Metadata } from "next";
-import EquityPlanModal from "./modal";
+import { CreateEquityPlanButton } from "./create-equity-plan-button";
 import EquityPlanTable from "./table";
 
 export const metadata: Metadata = {
@@ -49,7 +48,7 @@ const EquityPlanPage = async () => {
         title="You do not have any equity plans!"
         subtitle="Please click the button below to create a new equity plan."
       >
-        <EquityPlanModal
+        <CreateEquityPlanButton
           type="create"
           title="Create an equity plan"
           shareClasses={shareClasses}
@@ -62,12 +61,6 @@ const EquityPlanPage = async () => {
                 href: "https://captable.inc/help",
               }}
             />
-          }
-          trigger={
-            <Button>
-              <RiAddFill className="mr-2 h-5 w-5" />
-              Create an equity plan
-            </Button>
           }
         />
       </EmptyState>
@@ -85,10 +78,10 @@ const EquityPlanPage = async () => {
         </div>
 
         <div>
-          <EquityPlanModal
+          <CreateEquityPlanButton
             type="create"
-            title="Create an equity plan"
             shareClasses={shareClasses}
+            title="Create an equity plan"
             subtitle={
               <Tldr
                 message="Equity plans are used to distribute ownership of your company using stock options, RSUs, and other instruments among employees and stakeholders."
@@ -98,12 +91,6 @@ const EquityPlanPage = async () => {
                   href: "https://captable.inc/help",
                 }}
               />
-            }
-            trigger={
-              <Button>
-                <RiAddFill className="mr-2 h-5 w-5" />
-                Create an equity plan
-              </Button>
             }
           />
         </div>

@@ -12,13 +12,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   StepperModalFooter,
   StepperPrev,
   useStepper,
@@ -44,7 +37,7 @@ type TFormSchema = z.infer<typeof formSchema>;
 
 interface VestingDetailsProps {
   stakeholders: RouterOutputs["stakeholder"]["getStakeholders"];
-  equityPlans: RouterOutputs["equityPlan"]["getPlans"];
+  equityPlans: RouterOutputs["equityPlan"]["getPlans"]["data"];
 }
 
 export const VestingDetails = (props: VestingDetailsProps) => {
@@ -59,19 +52,19 @@ export const VestingDetails = (props: VestingDetailsProps) => {
     next();
   };
 
-  const disabled = !stakeholders.length && !equityPlans.data?.length;
+  const disabled = !stakeholders?.length && !equityPlans?.length;
 
   const vestingSchedileOpts = Object.keys(VestingSchedule).map((vKey) => ({
     value: vKey,
     label: VestingSchedule[vKey] || "",
   }));
 
-  const equityPlansOpts = equityPlans?.data?.map(({ id, name }) => ({
+  const equityPlansOpts = equityPlans?.map(({ id, name }) => ({
     value: id,
     label: name,
   }));
 
-  const stakeHolderOpts = stakeholders.map((stake) => ({
+  const stakeHolderOpts = stakeholders?.map((stake) => ({
     value: stake.id,
     label: stake.name,
   }));
@@ -100,7 +93,7 @@ export const VestingDetails = (props: VestingDetailsProps) => {
             )}
           />
 
-          {equityPlans.data.length ? (
+          {equityPlans?.length ? (
             <FormField
               control={form.control}
               name="equityPlanId"
@@ -152,7 +145,7 @@ export const VestingDetails = (props: VestingDetailsProps) => {
             }}
           />
 
-          {stakeholders.length ? (
+          {stakeholders?.length ? (
             <FormField
               control={form.control}
               name="stakeholderId"

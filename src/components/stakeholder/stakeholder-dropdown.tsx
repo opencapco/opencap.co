@@ -1,7 +1,7 @@
 "use client";
+
 import Tldr from "@/components/common/tldr";
 import { pushModal } from "@/components/modals";
-import MultipleStakeholdersModal from "@/components/stakeholder/multiple-stakeholders-modal";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -49,30 +49,33 @@ export default function StakeholderDropdown() {
             </Button>
           </li>
 
-          <MultipleStakeholdersModal
-            title="Add or Import Stakeholders"
-            subtitle={
-              <Tldr
-                message="Manage stakeholders by adding or importing them. 
-          Categorize, assign roles, and maintain contact info for investors, partners, and clients."
-                cta={{
-                  label: "Learn more",
-                  // TODO - this link should be updated to the correct URL
-                  href: "https://captable.inc/help",
-                }}
-              />
-            }
-            trigger={
-              <li>
-                <Button variant="ghost" size="sm" type="submit">
-                  <>
-                    <RiGroup2Fill className="mr-2 h-4 w-4" />
-                    Import multiple stakeholders
-                  </>
-                </Button>
-              </li>
-            }
-          />
+          <li>
+            <Button
+              variant="ghost"
+              size="sm"
+              type="submit"
+              onClick={() => {
+                pushModal("MultipleStakeholdersModal", {
+                  title: "Add or Import Stakeholders",
+                  subtitle: (
+                    <Tldr
+                      message="Manage stakeholders by adding them. 
+              Categorize, assign roles, and maintain contact info for investors, partners, and clients."
+                      cta={{
+                        label: "Learn more",
+                        href: "https://captable.inc/help",
+                      }}
+                    />
+                  ),
+                });
+              }}
+            >
+              <>
+                <RiGroup2Fill className="mr-2 h-4 w-4" />
+                Import multiple stakeholders
+              </>
+            </Button>
+          </li>
         </ul>
       </DropdownMenuContent>
     </DropdownMenu>

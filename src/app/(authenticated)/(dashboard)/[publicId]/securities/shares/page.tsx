@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { api } from "@/trpc/server";
 import { RiAddFill, RiPieChartFill } from "@remixicon/react";
 import type { Metadata } from "next";
+import { IssueShareButton } from "./issue-share-button";
 
 export const metadata: Metadata = {
   title: "Captable | Shares",
@@ -13,6 +14,8 @@ export const metadata: Metadata = {
 
 const SharesPage = async () => {
   const shares = await api.securities.getShares.query();
+  const stakeholders = await api.stakeholder.getStakeholders.query();
+  const shareClasses = await api.shareClass.get.query();
 
   if (shares?.data?.length === 0) {
     return (
@@ -21,16 +24,11 @@ const SharesPage = async () => {
         title="You have not issued any shares"
         subtitle="Please click the button below to start issuing shares."
       >
-        <ShareModal
-          size="4xl"
+        <IssueShareButton
           title="Create a share"
           subtitle="Please fill in the details to create and issue a share."
-          trigger={
-            <Button>
-              <RiAddFill className="mr-2 h-5 w-5" />
-              Create a share
-            </Button>
-          }
+          stakeholders={stakeholders}
+          shareClasses={shareClasses}
         />
       </EmptyState>
     );
@@ -46,16 +44,11 @@ const SharesPage = async () => {
           </p>
         </div>
         <div>
-          <ShareModal
-            size="4xl"
+          <IssueShareButton
             title="Create a share"
             subtitle="Please fill in the details to create and issue a share."
-            trigger={
-              <Button>
-                <RiAddFill className="mr-2 h-5 w-5" />
-                Create a share
-              </Button>
-            }
+            stakeholders={stakeholders}
+            shareClasses={shareClasses}
           />
         </div>
       </div>

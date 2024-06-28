@@ -5,7 +5,7 @@ import { pushModal } from "@/components/modals";
 import type { ShareClassMutationType } from "@/trpc/routers/share-class/schema";
 import { RiEqualizer2Line } from "@remixicon/react";
 
-type CreateShareClassButtonProps = {
+type EditShareClassButtonProps = {
   shareClasses?: ShareClassMutationType[];
   shareClass?: ShareClassMutationType;
 };
@@ -13,12 +13,13 @@ type CreateShareClassButtonProps = {
 export const EditShareClassButton = ({
   shareClasses,
   shareClass,
-}: CreateShareClassButtonProps) => {
+}: EditShareClassButtonProps) => {
   return (
     <RiEqualizer2Line
       className="h-5 w-5 cursor-pointer text-gray-500 hover:text-gray-700"
       onClick={() => {
         pushModal("ShareClassModal", {
+          shouldClientFetch: false,
           type: "update",
           title: "Update share class",
           shareClass,

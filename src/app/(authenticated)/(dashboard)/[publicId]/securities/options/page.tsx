@@ -1,12 +1,11 @@
 import EmptyState from "@/components/common/empty-state";
 import Tldr from "@/components/common/tldr";
-import { OptionModal } from "@/components/securities/options/option-modal";
 import OptionTable from "@/components/securities/options/option-table";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { api } from "@/trpc/server";
-import { RiAddFill, RiGroup2Fill } from "@remixicon/react";
+import { RiGroup2Fill } from "@remixicon/react";
 import type { Metadata } from "next";
+import { IssueStockOptionButton } from "./issue-stock-option-button";
 
 export const metadata: Metadata = {
   title: "Options",
@@ -14,6 +13,8 @@ export const metadata: Metadata = {
 
 const OptionsPage = async () => {
   const options = await api.securities.getOptions.query();
+  const stakeholders = await api.stakeholder.getStakeholders.query();
+  const equityPlans = await api.equityPlan.getPlans.query();
 
   if (options?.data?.length === 0) {
     return (
@@ -22,15 +23,13 @@ const OptionsPage = async () => {
         title="You have not issued any stock options yet."
         subtitle="Please click the button below to start issueing options."
       >
-        <OptionModal
+        <IssueStockOptionButton
+          showButtonIcon={true}
+          buttonDisplayName="Issue a stock option"
           title="Create an option"
           subtitle="Please fill in the details to create an option."
-          trigger={
-            <Button>
-              <RiAddFill className="mr-2 h-5 w-5" />
-              Issue a stock option
-            </Button>
-          }
+          equityPlans={equityPlans.data}
+          stakeholders={stakeholders}
         />
       </EmptyState>
     );
@@ -46,19 +45,22 @@ const OptionsPage = async () => {
           </p>
         </div>
         <div>
-          <OptionModal
+          <IssueStockOptionButton
+            showButtonIcon={false}
+            buttonDisplayName="Add Options"
             title="Collect options for Stakeholders"
             subtitle={
               <Tldr
                 message="Manage stock options by adding them. 
-               Add approval dates, notes, grantId for the stakeholders. "
+             Add approval dates, notes, grantId for the stakeholders. "
                 cta={{
                   label: "Learn more",
                   href: "https://captable.inc/help/stakeholder-options",
                 }}
               />
             }
-            trigger={<Button>Add Options</Button>}
+            equityPlans={equityPlans.data}
+            stakeholders={stakeholders}
           />
         </div>
       </div>

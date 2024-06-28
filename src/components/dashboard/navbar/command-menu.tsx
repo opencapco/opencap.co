@@ -32,7 +32,7 @@ type CommandOption = {
   title: string;
   path?: string;
   icon: RemixiconComponentType;
-  onClick?: () => void;
+  onClick?: (publicId: string) => void;
 };
 
 const Pages: CommandOption[] = [
@@ -65,21 +65,55 @@ const Pages: CommandOption[] = [
   {
     id: "documents",
     title: "Upload document",
-    path: "/documents",
     icon: RiUploadCloud2Fill,
+    onClick: (companyPublicId: string) => {
+      pushModal("DocumentUploadModal", {
+        companyPublicId,
+      });
+    },
   },
   {
-    id: "captable",
+    id: "esign-document",
+    title: "Upload esign document",
+    icon: RiUploadCloud2Fill,
+    onClick: (companyPublicId: string) => {
+      pushModal("AddEsignDocumentModal", {
+        title: "eSign a Document",
+        subtitle: "",
+        companyPublicId,
+      });
+    },
+  },
+  {
+    id: "equity-plan",
     title: "Create an equity plan",
-    path: "/captable",
     icon: RiPieChart2Fill,
+    onClick: () => {
+      pushModal("EquityPlanModal", {
+        shouldClientFetch: true,
+        type: "create",
+        title: "Create an equity plan",
+        shareClasses: [],
+        subtitle: (
+          <Tldr
+            message="Equity plans are used to distribute ownership of your company using stock options, RSUs, and other instruments among employees and stakeholders."
+            cta={{
+              label: "Learn more",
+              // TODO - this link should be updated to the correct URL
+              href: "https://captable.inc/help",
+            }}
+          />
+        ),
+      });
+    },
   },
   {
-    id: "securities",
+    id: "share-class",
     title: "Create a share class",
     icon: RiPieChart2Fill,
     onClick: () => {
       pushModal("ShareClassModal", {
+        shouldClientFetch: true,
         type: "create",
         title: "Create a share class",
         shareClasses: [],
@@ -97,14 +131,63 @@ const Pages: CommandOption[] = [
     },
   },
   {
-    id: "safe",
-    title: "Create a SAFE",
-    path: "/safe",
+    id: "issue-share",
+    title: "Issue a share",
+    onClick: () => {
+      pushModal("IssueShareModal", {
+        shouldClientFetch: true,
+        title: "Create a share",
+        subtitle: "Please fill in the details to create and issue a share.",
+        stakeholders: [],
+        shareClasses: [],
+      });
+    },
+    icon: RiPieChart2Fill,
+  },
+  {
+    id: "issue-stock-option",
+    title: "Issue a stock option",
+    onClick: () => {
+      pushModal("IssueStockOptionModal", {
+        shouldClientFetch: true,
+        title: "Create an option",
+        subtitle: "Please fill in the details to create an option.",
+        stakeholders: [],
+        equityPlans: [],
+      });
+    },
+    icon: RiPieChart2Fill,
+  },
+  {
+    id: "new-safe",
+    title: "Create a new SAFE",
+    onClick: () => {
+      pushModal("NewSafeModal", {
+        title: "Create a new SAFE agreement",
+        subtitle:
+          "Create, sign and send a new SAFE agreement to your investors.",
+      });
+    },
+    icon: RiPieChart2Fill,
+  },
+  {
+    id: "existing-safe",
+    title: "Create an existing SAFE agreement",
+    onClick: () => {
+      pushModal("ExistingSafeModal", {
+        title: "Create an existing SAFE agreement",
+        subtitle:
+          "Record an existing SAFE agreement to keep track of it in your captable.",
+      });
+    },
     icon: RiPieChart2Fill,
   },
 ];
 
-export function CommandMenu() {
+type CommandMenuProps = {
+  companyPublicId: string;
+};
+export function CommandMenu({ companyPublicId }: CommandMenuProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -153,7 +236,14 @@ export function CommandMenu() {
                   } else {
                     if (page.onClick) {
                       setOpen(false);
-                      page.onClick();
+                      if (
+                        page.id === "documents" ||
+                        page.id === "esign-document"
+                      ) {
+                        page.onClick(companyPublicId);
+                      } else {
+                        page.onClick("");
+                      }
                     }
                   }
                 }}

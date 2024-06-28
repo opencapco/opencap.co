@@ -19,7 +19,7 @@ import {
   useRef,
   useState,
 } from "react";
-import Modal, { type ModalProps } from "../common/modal";
+import Modal, { type ModalProps } from "../common/push-modal";
 import { Button, type ButtonProps } from "./button";
 import { Card } from "./card";
 import { DialogFooter } from "./dialog";
