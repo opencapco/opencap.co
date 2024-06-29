@@ -22,7 +22,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
-const ZodTeamMemberSchema = z.object({
+export const ZodTeamMemberSchema = z.object({
   name: z.string(),
   loginEmail: z.string(),
   workEmail: z.string(),
