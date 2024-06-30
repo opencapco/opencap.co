@@ -9,7 +9,7 @@ export const PaginationQuerySchema = z.object({
     .openapi({
       description: "Number of items to take",
       param: {
-        name: "take",
+        name: "limit",
         in: "query",
       },
       example: 10,
