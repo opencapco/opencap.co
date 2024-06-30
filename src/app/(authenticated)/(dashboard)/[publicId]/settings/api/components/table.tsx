@@ -1,6 +1,7 @@
 "use client";
 
 import { dayjsExt } from "@/common/dayjs";
+import Tldr from "@/components/common/tldr";
 import { Card } from "@/components/ui/card";
 import { RiMore2Fill } from "@remixicon/react";
 import { useRouter } from "next/navigation";
@@ -33,6 +34,14 @@ const ApiKeysTable = ({ keys }: { keys: ApiKey[] }) => {
 
   return (
     <Card className="mx-auto mt-3 w-[28rem] sm:w-[38rem] md:w-full">
+      <div className="mx-3">
+        <Tldr
+          message="
+          For security reasons, we have no ways to retrieve your complete API keys. If you lose your API key, you will need to create or rotate and replace with a new one.
+        "
+        />
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow>
@@ -46,7 +55,9 @@ const ApiKeysTable = ({ keys }: { keys: ApiKey[] }) => {
           {keys.map((key) => (
             <TableRow key={key.keyId}>
               <TableCell className="flex cursor-pointer items-center">
-                <code className="text-xs">{`${key.keyId}:xxx...`}</code>
+                <code className="text-xs">
+                  {`${key.keyId.slice(0, 3)}...${key.keyId.slice(-3)}:****`}
+                </code>
               </TableCell>
               <TableCell suppressHydrationWarning>
                 {dayjsExt().to(key.createdAt)}

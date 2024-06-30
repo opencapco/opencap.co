@@ -1,0 +1,161 @@
+{
+  "info": {
+    "_postman_id": "209da849-6850-40d0-a4bf-1b7d004be7ce",
+    "name": "Captable API (v1)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "36586471"
+  },
+  "item": [
+    {
+      "name": "Company",
+      "item": [
+        {
+          "name": "Get a company",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/companies/{{companyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["companies", "{{companyId}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List companies",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{bearerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/companies",
+              "host": ["{{baseUrl}}"],
+              "path": ["companies"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create company",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/companies",
+              "host": ["{{baseUrl}}"],
+              "path": ["companies"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update company",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/companies/{{companyId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["companies", "{{companyId}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Team",
+      "item": [
+        {
+          "name": "Get a team member",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "List team members",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Create a team member",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Update a team member",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Stakeholder",
+      "item": [
+        {
+          "name": "Get a stakeholder",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "List stakeholders",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Create a stakeholder",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        },
+        {
+          "name": "Update a stakeholder",
+          "request": {
+            "method": "GET",
+            "header": []
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

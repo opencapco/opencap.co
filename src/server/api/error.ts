@@ -4,59 +4,42 @@ import { HTTPException } from "hono/http-exception";
 import type { StatusCode } from "hono/utils/http-status";
 import { z } from "zod";
 
+const ErrorSchema = z.object({
+  error: z.object({
+    code: z.string(),
+    message: z.string(),
+  }),
+});
+
+const ErrorContent = {
+  "application/json": {
+    schema: ErrorSchema,
+  },
+};
+
 export const ErrorResponses = {
   400: {
-    content: {
-      "application/json": {
-        schema: z.object({
-          message: z.string(),
-        }),
-      },
-    },
+    content: ErrorContent,
     description: "Bad Request",
   },
 
   401: {
-    content: {
-      "application/json": {
-        schema: z.object({
-          message: z.string(),
-        }),
-      },
-    },
+    content: ErrorContent,
     description: "Unauthorized",
   },
 
   404: {
-    content: {
-      "application/json": {
-        schema: z.object({
-          message: z.string(),
-        }),
-      },
-    },
+    content: ErrorContent,
     description: "Not Found",
   },
 
   429: {
-    content: {
-      "application/json": {
-        schema: z.object({
-          message: z.string(),
-        }),
-      },
-    },
+    content: ErrorContent,
     description: "Rate Limited",
   },
 
   500: {
-    content: {
-      "application/json": {
-        schema: z.object({
-          message: z.string(),
-        }),
-      },
-    },
+    content: ErrorContent,
     description: "Internal Server Error",
   },
 };
@@ -175,6 +158,7 @@ export function handleError(err: Error, c: Context): Response {
   /**
    * This is a generic error, we should log it and return a 500
    */
+
   logger.error("UnhandledError", {
     name: err.name,
     message: err.message,

@@ -79,7 +79,9 @@ const CreateApiKey = () => {
           >
             <code className="text-sm font-mono text-rose-600">{apiKey}</code>
           </Card>
-          <span className="text-xs text-gray-700">Click to copy</span>
+          <span className="text-xs text-gray-700">
+            Click the API key above to copy
+          </span>
         </Fragment>
       </Modal>
     </Fragment>
