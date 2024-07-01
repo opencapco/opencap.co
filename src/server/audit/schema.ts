@@ -92,6 +92,8 @@ export const EsignAuditSchema = z.object({
     "document.complete",
     "recipient.signed",
     "document.email.sent",
+    "recipient.added",
+    "recipient.removed",
   ]),
   occurredAt: z.date().optional(),
   templateId: z.string(),

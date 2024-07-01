@@ -1,6 +1,7 @@
 "use client";
 
 import { createPushModal } from "pushmodal";
+import { ManageEsignRecipientsModal } from "./esign-recipients/manage-esign-recipients-modal";
 import { ShareClassModal } from "./share-class-modal";
 import { ShareDataRoomModal } from "./share-dataroom-modal";
 import { ShareUpdateModal } from "./share-update-modal";
@@ -16,5 +17,6 @@ export const { pushModal, popModal, ModalProvider } = createPushModal({
     SingleStakeholdersModal,
     ShareUpdateModal,
     ShareDataRoomModal,
+    ManageEsignRecipientsModal,
   },
 });

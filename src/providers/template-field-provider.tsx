@@ -3,9 +3,9 @@
 import { Form } from "@/components/ui/form";
 import { COLORS } from "@/constants/esign";
 import { FieldTypes, TemplateStatus } from "@/prisma/enums";
-import { type RouterOutputs } from "@/trpc/shared";
+import type { RouterOutputs } from "@/trpc/shared";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { type ReactNode } from "react";
+import { type ReactNode, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -61,24 +61,32 @@ export const TemplateFieldProvider = ({
   fields,
   recipients,
 }: TemplateFieldProviderProps) => {
+  const _recipientColors = useMemo(() => {
+    return recipients.reduce<Record<string, string>>((prev, curr, index) => {
+      const color = Object.keys(COLORS)?.[index] ?? "";
+      prev[curr.id] = color;
+      return prev;
+    }, {});
+  }, [recipients]);
+
   const form = useForm<TemplateFieldForm>({
     defaultValues: {
       status: "DRAFT",
       fields: fields ?? [],
       fieldType: undefined,
       recipient: recipients?.[0]?.id,
-      recipientColors: recipients
-        ? recipients.reduce<Record<string, string>>((prev, curr, index) => {
-            const color = Object.keys(COLORS)?.[index] ?? "";
-
-            prev[curr.id] = color;
-
-            return prev;
-          }, {})
-        : {},
+      recipientColors: recipients ? _recipientColors : {},
     },
     resolver: zodResolver(formSchema),
   });
+
+  //biome-ignore lint/correctness/useExhaustiveDependencies: its fine
+  useEffect(() => {
+    if (recipients.length && _recipientColors) {
+      form.setValue("recipientColors", _recipientColors);
+      form.setValue("recipient", recipients[0]?.id as string);
+    }
+  }, [recipients]);
 
   return <Form {...form}>{children}</Form>;
 };
