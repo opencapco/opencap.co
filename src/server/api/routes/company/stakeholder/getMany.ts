@@ -1,14 +1,18 @@
+import { withCompanyAuth } from "@/server/api/auth";
 import { ErrorResponses } from "@/server/api/error";
 import type { PublicAPI } from "@/server/api/hono";
+import { ProxyPrismaModel } from "@/server/api/pagination/prisma-proxy";
 import {
   PaginationQuerySchema,
   PaginationResponseSchema,
+  type TPaginationQuerySchema,
 } from "@/server/api/schema/pagination";
-import { StakeholderApiSchema } from "@/server/api/schema/stakeholder";
+import { StakeholderApiResponseSchema } from "@/server/api/schema/stakeholder";
+import { db } from "@/server/db";
 import { createRoute, z } from "@hono/zod-openapi";
-import type { Context, HonoRequest } from "hono";
+import type { Context } from "hono";
 
-const RequestParamsSchema = z.object({
+export const RequestParamsSchema = z.object({
   id: z
     .string()
     .cuid()
@@ -24,7 +28,7 @@ const RequestParamsSchema = z.object({
 });
 
 const ResponseSchema = z.object({
-  data: StakeholderApiSchema,
+  data: StakeholderApiResponseSchema,
   meta: PaginationResponseSchema,
 });
 
@@ -50,21 +54,41 @@ const route = createRoute({
 });
 
 const getMany = (app: PublicAPI) => {
+  //@ts-ignore
   app.openapi(route, async (c: Context) => {
-    const req: HonoRequest = await c.req;
-    // const { id } = req.params;
+    const { company } = await withCompanyAuth(c);
+    const body: TPaginationQuerySchema = await c.req.json();
 
-    // TODO : Implement the logic to fetch stakeholders from the database, please take a look at this doc for reference: https://www.prisma.io/docs/concepts/components/prisma-client/crud
-    // https://www.prisma.io/docs/orm/prisma-client/queries/pagination#cursor-based-pagination
+    const queryCriteria = {
+      where: {
+        companyId: company.id,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    };
 
-    // return c.json({
-    //   data: [],
-    //   meta: {
-    //     count: 0,
-    //     total: 0,
-    //     cursor: null,
-    //   },
-    // });
+    const paginationData = {
+      limit: body.limit,
+      cursor: body.cursor,
+    };
+
+    //@ts-ignore
+    const prismaModel = ProxyPrismaModel(db.stakeholder);
+    const { data, count, total, cursor } = await prismaModel.findManyPaginated(
+      queryCriteria,
+      paginationData,
+    );
+
+    return c.json({
+      data: data,
+      meta: {
+        data,
+        count,
+        total,
+        cursor,
+      },
+    });
   });
 };
 
