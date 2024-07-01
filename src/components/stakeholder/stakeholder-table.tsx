@@ -174,16 +174,18 @@ export const columns: ColumnDef<Stakeholder[number]>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
+      const singleStakeholder = row.original;
       return (
         <RiUserSettingsLine
+          className="h-4 w-4 cursor-pointer"
           onClick={() => {
             console.log(row.original);
-            pushModal("WipModal", {
-              title: "Work in progress",
-              subtitle: "TODO: Implement this modal",
+            pushModal("UpdateSingleStakeholderModal", {
+              title: "Update stakeholder",
+              subtitle: "Edit the stakeholder details",
+              stakeholder: singleStakeholder,
             });
           }}
-          className="h-4 w-4 cursor-pointer"
         />
       );
     },

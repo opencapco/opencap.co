@@ -19,32 +19,82 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { api } from "@/trpc/react";
+import type { RouterOutputs } from "@/trpc/shared";
+import { Label } from "@radix-ui/react-select";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export const SingleStakeholderForm = () => {
+export type TStakeholder =
+  RouterOutputs["stakeholder"]["getStakeholders"][number];
+
+type TSingleStakeholderForm =
+  | {
+      type: "create";
+      stakeholder?: never;
+    }
+  | {
+      type: "update";
+      stakeholder: TStakeholder;
+    };
+
+export const SingleStakeholderForm = ({
+  type,
+  stakeholder,
+}: TSingleStakeholderForm) => {
   const form = useForm<AddStakeholderMutationType>({
+    defaultValues: {
+      name: stakeholder?.name ?? "",
+      email: stakeholder?.email ?? "",
+      institutionName: stakeholder?.institutionName ?? "",
+      stakeholderType: stakeholder?.stakeholderType,
+      currentRelationship: stakeholder?.currentRelationship,
+      taxId: stakeholder?.taxId ?? "",
+      streetAddress: stakeholder?.streetAddress ?? "",
+      city: stakeholder?.city ?? "",
+      state: stakeholder?.state ?? "",
+      zipcode: stakeholder?.zipcode ?? "",
+    },
     resolver: zodResolver(ZodAddStakeholderMutationSchema),
   });
 
   const isSubmitting = form.formState.isSubmitting;
   const router = useRouter();
 
-  const { mutateAsync } = api.stakeholder.addStakeholders.useMutation({
-    onSuccess: ({ success, message }) => {
-      if (success) {
-        form.reset();
-        router.refresh();
-        toast.success("🎉 Successfully created!");
-      } else {
-        toast.error(`🔥 Error - ${message}`);
-      }
-    },
-  });
+  const { mutateAsync: addStakeholderMutation } =
+    api.stakeholder.addStakeholders.useMutation({
+      onSuccess: ({ success, message }) => {
+        if (success) {
+          router.refresh();
+          form.reset();
+          toast.success("🎉 Successfully created!");
+          popModal();
+        } else {
+          toast.error(`🔥 Error - ${message}`);
+        }
+      },
+    });
+
+  const { mutateAsync: updateStakeholderMutation } =
+    api.stakeholder.updateStakeholder.useMutation({
+      onSuccess: ({ success, message }) => {
+        if (success) {
+          router.refresh();
+          form.reset();
+          toast.success(message);
+          popModal();
+        } else {
+          toast.error(`🔥 Error - ${message}`);
+        }
+      },
+    });
 
   const onSubmit = async (values: AddStakeholderMutationType) => {
-    await mutateAsync([values]);
-    popModal("SingleStakeholdersModal");
+    console.log({ values }, "x");
+    if (type === "update") {
+      await updateStakeholderMutation({ ...values, id: stakeholder.id });
+    } else {
+      await addStakeholderMutation([values]);
+    }
   };
 
   const stakeHolderTypeOpts = [
@@ -125,6 +175,7 @@ export const SingleStakeholderForm = () => {
                   <FormLabel>Type</FormLabel>
                   <div>
                     <LinearCombobox
+                      defaultOption={{ value: field.value, label: field.value }}
                       options={stakeHolderTypeOpts}
                       onValueChange={(option) => {
                         field.onChange(option.value);
@@ -145,6 +196,7 @@ export const SingleStakeholderForm = () => {
                   <FormLabel>Group</FormLabel>
                   <div>
                     <LinearCombobox
+                      defaultOption={{ value: field.value, label: field.value }}
                       options={groupTypeOpts}
                       onValueChange={(option) => field.onChange(option.value)}
                     />
@@ -226,8 +278,18 @@ export const SingleStakeholderForm = () => {
           </div>
         </div>
         <div className="mt-8 flex justify-end">
-          <Button loading={isSubmitting} type="submit">
-            {isSubmitting ? "Adding stakeholder..." : "Add a stakeholder"}
+          <Button
+            disabled={type === "update" && !form.formState.isDirty}
+            loading={isSubmitting}
+            type="submit"
+          >
+            {type === "create"
+              ? isSubmitting
+                ? "Adding stakeholder"
+                : "Add a stakeholder"
+              : isSubmitting
+                ? "Updating stakeholder"
+                : "Update stakeholder"}
           </Button>
         </div>
       </form>

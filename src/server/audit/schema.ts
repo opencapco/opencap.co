@@ -17,6 +17,10 @@ export const AuditSchema = z.object({
     "member.deactivated",
     "member.activated",
 
+    "stakeholder.added",
+    "stakeholder.updated",
+    "stakeholder.deleted",
+
     "shareClass.created",
     "shareClass.updated",
     "shareClass.deleted",
@@ -64,6 +68,7 @@ export const AuditSchema = z.object({
         "documentShare",
         "share",
         "update",
+        "stakeholder",
       ]),
       id: z.string().optional().nullable(),
     }),

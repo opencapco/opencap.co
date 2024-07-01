@@ -33,3 +33,6 @@ export type TypeStakeholderArray = z.infer<
 export type AddStakeholderMutationType = z.infer<
   typeof ZodAddStakeholderMutationSchema
 >;
+
+export const ZodUpdateStakeholderMutationSchema =
+  ZodAddStakeholderMutationSchema.partial();
