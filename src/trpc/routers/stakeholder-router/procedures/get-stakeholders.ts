@@ -1,15 +1,13 @@
-import { checkMembership } from "@/server/auth";
-import { withAuth } from "@/trpc/api/trpc";
+import { withAccessControl } from "@/trpc/api/trpc";
 
-export const getStakeholdersProcedure = withAuth.query(async ({ ctx }) => {
-  const { db, session } = ctx;
+export const getStakeholdersProcedure = withAccessControl
+  .meta({ policies: { stakeholder: { allow: ["read"] } } })
+  .query(async ({ ctx }) => {
+    const { db, membership } = ctx;
 
-  const data = await db.$transaction(async (tx) => {
-    const { companyId } = await checkMembership({ session, tx });
-
-    const stakeholder = await tx.stakeholder.findMany({
+    const data = await db.stakeholder.findMany({
       where: {
-        companyId,
+        companyId: membership.companyId,
       },
       include: {
         company: {
@@ -22,8 +20,6 @@ export const getStakeholdersProcedure = withAuth.query(async ({ ctx }) => {
         createdAt: "desc",
       },
     });
-    return stakeholder;
-  });
 
-  return data;
-});
+    return data;
+  });

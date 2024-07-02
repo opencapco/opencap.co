@@ -304,13 +304,13 @@ export const withServerSession = async () => {
   return session;
 };
 
-interface checkMembershipOptions {
+export interface checkMembershipOptions {
   session: Session;
   tx: TPrismaOrTransaction;
 }
 
 export async function checkMembership({ session, tx }: checkMembershipOptions) {
-  const { companyId, id: memberId } = await tx.member.findFirstOrThrow({
+  const data = await tx.member.findFirst({
     where: {
       id: session.user.memberId,
       companyId: session.user.companyId,
@@ -319,8 +319,15 @@ export async function checkMembership({ session, tx }: checkMembershipOptions) {
     select: {
       id: true,
       companyId: true,
+      role: true,
     },
   });
 
-  return { companyId, memberId };
+  if (!data) {
+    throw new Error("membership not found");
+  }
+
+  const { companyId, id: memberId, ...rest } = data;
+
+  return { companyId, memberId, ...rest };
 }

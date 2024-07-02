@@ -13,7 +13,7 @@ import { RiAccountCircleFill, RiAddFill, RiGroup2Fill } from "@remixicon/react";
 export default function StakeholderDropdown() {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger>
+      <DropdownMenuTrigger asChild>
         <Button>
           <RiAddFill className="mr-2 h-5 w-5" />
           Add stakeholders

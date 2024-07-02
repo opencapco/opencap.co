@@ -1,18 +1,16 @@
-import { checkMembership } from "@/server/auth";
-import { withAuth } from "@/trpc/api/trpc";
+import { withAccessControl } from "@/trpc/api/trpc";
 import { ZodAddStakeholderArrayMutationSchema } from "../schema";
 
-export const addStakeholdersProcedure = withAuth
+export const addStakeholdersProcedure = withAccessControl
   .input(ZodAddStakeholderArrayMutationSchema)
-  .mutation(async ({ ctx: { db, session }, input }) => {
+  .meta({ policies: { stakeholder: { allow: ["create"] } } })
+  .mutation(async ({ ctx: { db, membership }, input }) => {
     try {
       await db.$transaction(async (tx) => {
-        const { companyId } = await checkMembership({ session, tx });
-
         // insert companyId in every input
         const inputDataWithCompanyId = input.map((stakeholder) => ({
           ...stakeholder,
-          companyId,
+          companyId: membership.companyId,
         }));
 
         await tx.stakeholder.createMany({
@@ -25,8 +23,7 @@ export const addStakeholdersProcedure = withAuth
         success: true,
         message: "Stakeholders added successfully!",
       };
-    } catch (error) {
-      console.error("Error adding stakeholders:", error);
+    } catch (_error) {
       return {
         success: false,
         message: "Oops, something went wrong. Please try again later.",

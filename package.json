@@ -26,7 +26,8 @@
     "format": "biome format --write ./src && prisma format",
     "email:preview": "email preview ./src/emails",
     "copy:pdfjs": "node scripts/copy-pdfjs-worker.cjs",
-    "knip": "knip"
+    "knip": "knip",
+    "test": "vitest"
   },
   "dependencies": {
     "@ark-ui/react": "^2.2.3",
@@ -144,7 +145,8 @@
     "prisma": "^5.13.0",
     "tailwindcss": "^3.4.3",
     "tsx": "^4.7.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
   },
   "ct3aMetadata": {
     "initVersion": "7.25.1"

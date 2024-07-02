@@ -13,6 +13,7 @@ import { equityPlanRouter } from "../routers/equity-plan/router";
 import { memberRouter } from "../routers/member-router/router";
 import { onboardingRouter } from "../routers/onboarding-router/router";
 import { passkeyRouter } from "../routers/passkey-router/router";
+import { rbacRouter } from "../routers/rbac-router/router";
 import { safeRouter } from "../routers/safe/router";
 import { securitiesRouter } from "../routers/securities-router/router";
 import { securityRouter } from "../routers/security-router/router";
@@ -49,6 +50,7 @@ export const appRouter = createTRPCRouter({
   passkey: passkeyRouter,
   security: securityRouter,
   billing: billingRouter,
+  rbac: rbacRouter,
   apiKey: apiKeyRouter,
 });
 
